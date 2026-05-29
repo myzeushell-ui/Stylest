@@ -1,0 +1,22 @@
+{
+  "name": "obraz",
+  "version": "0.1.0",
+  "private": true,
+  "description": "«Образ» — персональный AI-ассистент по внешности и здоровью (MVP)",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace apps/api & npm run dev --workspace apps/web",
+    "dev:web": "npm run dev --workspace apps/web",
+    "dev:api": "npm run dev --workspace apps/api",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "prisma:generate": "npm run prisma:generate --workspace apps/api"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

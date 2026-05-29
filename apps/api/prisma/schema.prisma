@@ -1,0 +1,217 @@
+// Prisma-схема «Образ». Целевая БД — Postgres (Supabase, self-hosted, без
+// западной карты). Это канонический источник модели данных.
+//
+// ДОПУЩЕНИЕ: на старте приложение работает локально-первым способом (данные в
+// браузере, PWA-офлайн), а живой Supabase подключается отдельным шагом. Схема
+// готова заранее, чтобы переход был бесшовным.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile      SelfProfile?
+  wardrobe     WardrobeItem[]
+  outfits      Outfit[]
+  beautyDiary  BeautyEntry[]
+  beautyItems  BeautyProduct[]
+  goals        FitnessGoal[]
+  activity     ActivityLog[]
+  styleDNA     StyleDNA?
+  beautyDNA    BeautyDNA?
+  bodyDNA      BodyDNA?
+  impactScores PurchaseImpactScore[]
+  messages     ChatMessage[]
+}
+
+model SelfProfile {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName      String
+  colorType        String
+  bodyType         String
+  skinType         String
+  hairType         String
+  monthlyBudgetRub Int      @default(0)
+  styleGoals       String[]
+  lifestyleTags    String[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model WardrobeItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  category  String
+  color     String
+  seasons   String[]
+  photoUrl  String?
+  priceRub  Int?
+  wearCount Int      @default(0)
+  brand     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Outfit {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  itemIds   String[]
+  occasion  String?
+  liked     Boolean?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BeautyEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime
+  photoUrl  String?
+  skinScore Int
+  hairScore Int
+  notes     String?
+  analysis  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BeautyProduct {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  kind        String
+  brand       String?
+  ingredients String[]
+  openedAt    DateTime?
+  finished    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FitnessGoal {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title      String
+  kind       String
+  targetDate DateTime?
+  done       Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime
+  activity    String
+  durationMin Int
+  intensity   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model StyleDNA {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bestColors          String[]
+  worstColors         String[]
+  baseWardrobeColors  String[]
+  accentColors        String[]
+  bestSilhouettes     String[]
+  worstSilhouettes    String[]
+  styleGoals          String[]
+  lifestyleTags       String[]
+  wardrobeStrengths   String[]
+  wardrobeWeaknesses  String[]
+  missingKeyItems     String[]
+  highImpactPurchases String[]
+  lowValuePurchases   String[]
+  styleSummary        String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model BeautyDNA {
+  id                     String   @id @default(cuid())
+  userId                 String   @unique
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skinType               String
+  skinConcerns           String[]
+  skinSensitivity        String
+  bestMakeupStyles       String[]
+  worstMakeupStyles      String[]
+  bestMakeupColors       String[]
+  hairType               String
+  hairCondition          String
+  hairGoals              String[]
+  beautyRoutineGoals     String[]
+  recommendedIngredients String[]
+  ingredientsToAvoid     String[]
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+model BodyDNA {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bodyType            String
+  postureNotes        String
+  areasToHighlight    String[]
+  areasToBalance      String[]
+  bestFits            String[]
+  worstFits           String[]
+  fitnessGoals        String[]
+  styleCorrectionTips String[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model PurchaseImpactScore {
+  id                      String   @id @default(cuid())
+  userId                  String
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemType                String // clothing | beauty | hair | fitness
+  itemId                  String
+  compatibilityScore      Int
+  wardrobeImpactScore     Int
+  beautyCompatibilityScore Int
+  budgetFitScore          Int
+  lifestyleFitScore       Int
+  finalScore              Int
+  aiExplanation           String
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String // user | assistant
+  content   String
+  module    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-soft text-ink antialiased;
+  /* Безопасные зоны для PWA на мобильных. */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Переиспользуемые классы-компоненты. */
+@layer components {
+  .card {
+    @apply rounded-2xl bg-white p-4 shadow-sm border border-black/5;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium transition active:scale-95;
+  }
+  .btn-primary {
+    @apply btn bg-ink text-white hover:bg-ink/90;
+  }
+  .btn-accent {
+    @apply btn bg-accent text-ink hover:brightness-105;
+  }
+  .btn-ghost {
+    @apply btn bg-black/5 text-ink hover:bg-black/10;
+  }
+  .chip {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-medium border;
+  }
+  .chip-on {
+    @apply chip bg-ink text-white border-ink;
+  }
+  .chip-off {
+    @apply chip bg-white text-ink/70 border-black/10;
+  }
+  .input {
+    @apply w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-ink;
+  }
+  .label {
+    @apply block text-xs font-medium text-ink/60 mb-1;
+  }
+}
