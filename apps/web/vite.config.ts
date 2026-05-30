@@ -4,7 +4,11 @@ import { VitePWA } from 'vite-plugin-pwa';
 import path from 'node:path';
 
 // PWA «Образ»: мобильный-первый, офлайн-кэш через service worker.
+// base задаётся через VITE_BASE (для GitHub Pages = '/Stylest/'), локально = '/'.
+const base = process.env.VITE_BASE ?? '/';
+
 export default defineConfig({
+  base,
   plugins: [
     react(),
     VitePWA({
@@ -18,7 +22,7 @@ export default defineConfig({
         theme_color: '#0f172a',
         background_color: '#0f172a',
         display: 'standalone',
-        start_url: '/',
+        start_url: '.',
         icons: [
           { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' },
         ],
