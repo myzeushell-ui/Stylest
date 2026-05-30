@@ -5,6 +5,8 @@ import {
   HAIR_TYPES,
   STYLE_GOALS,
   LIFESTYLE_TAGS,
+  CLOTHING_SIZES,
+  GENDER_PRESENTATIONS,
 } from '@obraz/shared';
 import { useProfile } from '../store/profile';
 import { PageHeader, Card, Section, ChipGroup } from '../components/ui';
@@ -34,6 +36,21 @@ export function ProfileScreen() {
             <Select label={t.profile.bodyType} value={profile.bodyType} options={BODY_TYPES} onChange={(v) => update({ bodyType: v })} />
             <Select label={t.profile.skinType} value={profile.skinType} options={SKIN_TYPES} onChange={(v) => update({ skinType: v })} />
             <Select label={t.profile.hairType} value={profile.hairType} options={HAIR_TYPES} onChange={(v) => update({ hairType: v })} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Select label="Размер одежды" value={profile.clothingSize} options={CLOTHING_SIZES} onChange={(v) => update({ clothingSize: v })} />
+            <Select label="Подача" value={profile.genderPresentation} options={GENDER_PRESENTATIONS} onChange={(v) => update({ genderPresentation: v })} />
+          </div>
+          <div>
+            <label className="label">Рост: {profile.heightCm} см</label>
+            <input
+              type="range"
+              min={140}
+              max={210}
+              value={profile.heightCm}
+              onChange={(e) => update({ heightCm: Number(e.target.value) })}
+              className="w-full accent-ink"
+            />
           </div>
           <div>
             <label className="label">{t.profile.budget}</label>

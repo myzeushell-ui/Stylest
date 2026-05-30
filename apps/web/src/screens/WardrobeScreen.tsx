@@ -6,6 +6,7 @@ import { useWardrobe } from '../store/wardrobe';
 import { api } from '../lib/api';
 import { costPerWear } from '../lib/analytics';
 import { Card, PageHeader, Section, EmptyState, ChipGroup } from '../components/ui';
+import { PhotoCapture } from '../components/PhotoCapture';
 import { t } from '../i18n';
 
 export function WardrobeScreen() {
@@ -87,15 +88,10 @@ function AddItemForm({ onAdd }: { onAdd: (d: AddData) => void }) {
   const [priceRub, setPriceRub] = useState<string>('');
   const [photoUrl, setPhotoUrl] = useState<string | undefined>();
 
-  const onFile = (file?: File) => {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setPhotoUrl(reader.result as string);
-    reader.readAsDataURL(file);
-  };
-
   return (
     <Card className="mb-4 space-y-3">
+      {/* Фото вещи — камера телефона или галерея */}
+      <PhotoCapture value={photoUrl} onChange={setPhotoUrl} />
       <div>
         <label className="label">Название</label>
         <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Белая рубашка" />
@@ -122,15 +118,9 @@ function AddItemForm({ onAdd }: { onAdd: (d: AddData) => void }) {
           onToggle={(s) => setSeasons((cur) => (cur.includes(s) ? cur.filter((x) => x !== s) : [...cur, s]))}
         />
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="label">Цена, ₽ (для cost-per-wear)</label>
-          <input className="input" type="number" value={priceRub} onChange={(e) => setPriceRub(e.target.value)} />
-        </div>
-        <div>
-          <label className="label">Фото</label>
-          <input className="input" type="file" accept="image/*" onChange={(e) => onFile(e.target.files?.[0])} />
-        </div>
+      <div>
+        <label className="label">Цена, ₽ (для cost-per-wear)</label>
+        <input className="input" type="number" value={priceRub} onChange={(e) => setPriceRub(e.target.value)} />
       </div>
       <button
         className="btn-primary w-full"

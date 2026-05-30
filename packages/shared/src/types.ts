@@ -5,7 +5,9 @@
 
 import type {
   BodyType,
+  ClothingSize,
   ColorType,
+  GenderPresentation,
   HairType,
   ItemType,
   LifestyleTag,
@@ -30,6 +32,12 @@ export interface SelfProfile extends BaseEntity {
   bodyType: BodyType;
   skinType: SkinType;
   hairType: HairType;
+  /** Рост, см — для подсказок по посадке и пропорциям. */
+  heightCm: number;
+  /** Размер одежды (международный). */
+  clothingSize: ClothingSize;
+  /** Как подавать рекомендации (женственно/мужественно/нейтрально). */
+  genderPresentation: GenderPresentation;
   /** Бюджет на покупки в месяц, ₽. Используется в budgetFitScore. */
   monthlyBudgetRub: number;
   styleGoals: StyleGoal[];

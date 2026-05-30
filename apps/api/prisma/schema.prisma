@@ -43,6 +43,9 @@ model SelfProfile {
   bodyType         String
   skinType         String
   hairType         String
+  heightCm           Int      @default(170)
+  clothingSize       String   @default("M")
+  genderPresentation String   @default("нейтральная")
   monthlyBudgetRub Int      @default(0)
   styleGoals       String[]
   lifestyleTags    String[]

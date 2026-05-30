@@ -82,6 +82,14 @@ export type SkinType = (typeof SKIN_TYPES)[number];
 export const HAIR_TYPES = ['прямые', 'волнистые', 'кудрявые', 'афро'] as const;
 export type HairType = (typeof HAIR_TYPES)[number];
 
+/** Размеры одежды (международные). */
+export const CLOTHING_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'] as const;
+export type ClothingSize = (typeof CLOTHING_SIZES)[number];
+
+/** Пол/гендерное предпочтение в подаче рекомендаций. */
+export const GENDER_PRESENTATIONS = ['женственная', 'мужественная', 'нейтральная'] as const;
+export type GenderPresentation = (typeof GENDER_PRESENTATIONS)[number];
+
 /** Готовые вопросы-кнопки для AI-чата (фаза Style DNA). */
 export const AI_SUGGESTED_QUESTIONS = [
   'Что докупить, чтобы выглядеть дороже?',

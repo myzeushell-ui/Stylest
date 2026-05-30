@@ -6,6 +6,7 @@ import { useProfile } from '../store/profile';
 import { useWardrobe } from '../store/wardrobe';
 import { useStyleDna } from '../store/styledna';
 import { api, type AIChatContext } from '../lib/api';
+import { useVoice } from '../lib/useVoice';
 import { PageHeader } from '../components/ui';
 import { t } from '../i18n';
 
@@ -15,7 +16,9 @@ export function ChatScreen() {
   const wardrobe = useWardrobe((s) => s.items);
   const styleDNA = useStyleDna((s) => s.styleDNA);
   const [input, setInput] = useState('');
+  const [voiceMode, setVoiceMode] = useState(false); // авто-озвучка ответов
   const endRef = useRef<HTMLDivElement>(null);
+  const voice = useVoice();
 
   // Контекст пользователя для персонализации ответов (и объяснений «почему»).
   const context: AIChatContext = {
@@ -37,7 +40,11 @@ export function ChatScreen() {
       const history = [...messages, { role: 'user' as const, content: text }];
       return api.aiChat(history, context);
     },
-    onSuccess: (res) => push({ role: 'assistant', content: res.content }),
+    onSuccess: (res) => {
+      push({ role: 'assistant', content: res.content });
+      // Если включён голосовой режим — озвучиваем ответ.
+      if (voiceMode) voice.speak(res.content);
+    },
     onError: () => push({ role: 'assistant', content: 'Не удалось получить ответ. Проверь, что бэкенд запущен.' }),
   });
 
@@ -53,9 +60,26 @@ export function ChatScreen() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages.length, chat.isPending]);
 
+  // Голосовой ввод: распознаём речь и сразу отправляем.
+  const startVoice = () => {
+    if (voice.listening) { voice.stopListening(); return; }
+    voice.listen((text) => { setVoiceMode(true); send(text); });
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-9rem)]">
-      <PageHeader title={t.ai.title} subtitle="Отвечаю персонально и всегда объясняю «почему»." />
+      <div className="flex items-center justify-between">
+        <PageHeader title={t.ai.title} subtitle="Голосом или текстом. Всегда объясняю «почему»." />
+        {voice.synthSupported && (
+          <button
+            onClick={() => { setVoiceMode((v) => !v); if (voice.speaking) voice.stopSpeaking(); }}
+            className={`chip ${voiceMode ? 'bg-accent text-ink border-accent' : 'chip-off'} shrink-0`}
+            title="Озвучивать ответы голосом"
+          >
+            {voiceMode ? '🔊 Голос вкл' : '🔇 Голос выкл'}
+          </button>
+        )}
+      </div>
 
       <div className="flex-1 overflow-y-auto space-y-3 pb-2">
         {messages.length === 0 && (
@@ -83,16 +107,26 @@ export function ChatScreen() {
           </div>
         ))}
         {chat.isPending && <div className="text-sm text-ink/40">{t.ai.thinking}</div>}
+        {voice.speaking && <div className="text-sm text-accent">🔊 Озвучиваю…</div>}
         <div ref={endRef} />
       </div>
 
       <div className="flex gap-2 pt-2">
+        {voice.recognitionSupported && (
+          <button
+            onClick={startVoice}
+            className={`btn shrink-0 ${voice.listening ? 'bg-rose-500 text-white animate-pulse' : 'bg-accent text-ink'}`}
+            title="Сказать голосом"
+          >
+            {voice.listening ? '⏺' : '🎤'}
+          </button>
+        )}
         <input
           className="input flex-1"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && send(input)}
-          placeholder={t.ai.placeholder}
+          placeholder={voice.listening ? 'Слушаю…' : t.ai.placeholder}
         />
         <button className="btn-primary" onClick={() => send(input)} disabled={chat.isPending}>
           {t.common.ask}

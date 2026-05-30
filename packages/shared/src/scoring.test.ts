@@ -15,6 +15,7 @@ const profile: SelfProfile = {
   id: 'p1', userId: 'u1', createdAt: '', updatedAt: '',
   displayName: 'Тест', colorType: 'зима', bodyType: 'песочные часы',
   skinType: 'комбинированная', hairType: 'прямые',
+  heightCm: 170, clothingSize: 'M', genderPresentation: 'нейтральная',
   monthlyBudgetRub: 10000, styleGoals: ['дороже'], lifestyleTags: ['работа', 'свидания'],
 };
 

@@ -1,5 +1,7 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { AppShell } from './components/AppShell';
+import { OnboardingScreen } from './screens/OnboardingScreen';
+import { useProfile } from './store/profile';
 import { HomeScreen } from './screens/HomeScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
 import { WardrobeScreen } from './screens/WardrobeScreen';
@@ -17,8 +19,16 @@ import { BodyDnaScreen } from './screens/BodyDnaScreen';
 import { StyleDnaHubScreen } from './screens/StyleDnaHubScreen';
 
 export function App() {
+  const onboarded = useProfile((s) => s.onboarded);
+
   return (
     <Routes>
+      {/* Онбординг-квиз при первом запуске */}
+      <Route path="onboarding" element={<OnboardingScreen />} />
+
+      {/* Пока не прошёл онбординг — отправляем на квиз */}
+      {!onboarded && <Route path="*" element={<Navigate to="/onboarding" replace />} />}
+
       <Route element={<AppShell />}>
         <Route index element={<HomeScreen />} />
         <Route path="profile" element={<ProfileScreen />} />
